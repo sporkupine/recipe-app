@@ -1,13 +1,16 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+
 import { Ingredient } from 'src/app/shared/ingredient.model';
 import { ShoppingService } from '../shopping.service';
+import * as ShoppingActions from "../store/shopping.actions";
 
 @Component({
   selector: 'app-shopping-edit',
   templateUrl: './shopping-edit.component.html',
-  styleUrls: ['./shopping-edit.component.css']
+  styleUrls: ['./shopping-edit.component.css'],
 })
 export class ShoppingEditComponent implements OnInit, OnDestroy {
   @ViewChild('f') shoppingForm: NgForm;
@@ -16,8 +19,10 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   editedItemIndex: number;
   editedItem: Ingredient;
 
-
-  constructor(private shoppingService: ShoppingService) { }
+  constructor(
+    private shoppingService: ShoppingService,
+    private store: Store<{ shopping: { ingredients: Ingredient[] } }>
+  ) {}
 
   ngOnInit() {
     this.subscription = this.shoppingService.startedEditing.subscribe(
@@ -27,23 +32,26 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
         this.editedItem = this.shoppingService.getIngredient(index);
         this.shoppingForm.setValue({
           name: this.editedItem.name,
-          amount: this.editedItem.amount
-        })
+          amount: this.editedItem.amount,
+        });
       }
     );
   }
-
 
   onSubmit(form: NgForm) {
     const value = form.value;
     const newIngredient = new Ingredient(value.name, value.amount);
     if (this.editMode) {
-      this.shoppingService.updateIngredient(this.editedItemIndex, newIngredient)
+      this.shoppingService.updateIngredient(
+        this.editedItemIndex,
+        newIngredient
+      );
     } else {
-      this.shoppingService.addIngredient(newIngredient);
+      // this.shoppingService.addIngredient(newIngredient);
+      this.store.dispatch(new ShoppingActions.AddIngredient(newIngredient))
     }
-      this.editMode = false;
-      this.shoppingForm.reset();
+    this.editMode = false;
+    this.shoppingForm.reset();
   }
 
   onDelete(ingredient: Ingredient) {
