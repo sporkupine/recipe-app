@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 
 import { Ingredient } from '../shared/ingredient.model';
-import { ShoppingService } from '../shopping/shopping.service';
 import { Recipe } from './recipe.model';
 import * as ShoppingActions from "../shopping/store/shopping.actions";
 import * as fromShopping from "../shopping/store/shopping.reducer"
@@ -51,7 +50,6 @@ export class RecipeService {
   private recipes: Recipe[] = [];
 
   constructor(
-    private shoppingService: ShoppingService,
     private store: Store<fromShopping.AppState>
   ) {}
 
