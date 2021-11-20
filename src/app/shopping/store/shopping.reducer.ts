@@ -36,6 +36,9 @@ export function shoppingReducer(
     case ShoppingActions.DELETE_INGREDIENT:
       return {
         ...state,
+        ingredients: state.ingredients.filter((ingredient, ingredientIndex) => {
+          return ingredientIndex != action.payload;
+        })
       };
     case ShoppingActions.UPDATE_INGREDIENT:
       const ingredient = state.ingredients[action.payload.index];

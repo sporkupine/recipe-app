@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 
 import { Ingredient } from 'src/app/shared/ingredient.model';
 import { ShoppingService } from '../shopping.service';
-import * as ShoppingActions from "../store/shopping.actions";
-import * as fromShopping from '../store/shopping.reducer'
+import * as ShoppingActions from '../store/shopping.actions';
+import * as fromShopping from '../store/shopping.reducer';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -43,20 +43,29 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     const value = form.value;
     const newIngredient = new Ingredient(value.name, value.amount);
     if (this.editMode) {
-      this.shoppingService.updateIngredient(
-        this.editedItemIndex,
-        newIngredient
+      // this.shoppingService.updateIngredient(
+      //   this.editedItemIndex,
+      //   newIngredient
+      // );
+      this.store.dispatch(
+        new ShoppingActions.UpdateIngredient({
+          index: this.editedItemIndex,
+          ingredient: newIngredient,
+        })
       );
     } else {
       // this.shoppingService.addIngredient(newIngredient);
-      this.store.dispatch(new ShoppingActions.AddIngredient(newIngredient))
+      this.store.dispatch(new ShoppingActions.AddIngredient(newIngredient));
     }
     this.editMode = false;
     this.shoppingForm.reset();
   }
 
   onDelete(ingredient: Ingredient) {
-    this.shoppingService.deleteIngredient(this.editedItemIndex);
+    // this.shoppingService.deleteIngredient(this.editedItemIndex);
+    this.store.dispatch(
+      new ShoppingActions.DeleteIngredient(this.editedItemIndex)
+    );
     this.onClear();
   }
 
