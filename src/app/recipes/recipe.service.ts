@@ -6,6 +6,7 @@ import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingService } from '../shopping/shopping.service';
 import { Recipe } from './recipe.model';
 import * as ShoppingActions from "../shopping/store/shopping.actions";
+import * as fromShopping from "../shopping/store/shopping.reducer"
 
 @Injectable()
 export class RecipeService {
@@ -51,7 +52,7 @@ export class RecipeService {
 
   constructor(
     private shoppingService: ShoppingService,
-    private store: Store<{ shopping: { ingredients: Ingredient[] } }>
+    private store: Store<fromShopping.AppState>
   ) {}
 
   getRecipe(id: number) {
