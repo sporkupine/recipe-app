@@ -29,58 +29,9 @@ export class AuthService {
     private store: Store<fromRoot.AppState>
   ) {}
 
-  signup(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
-          environment.firebaseAPIKey,
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap((responseData) => {
-          this.handleAuth(
-            responseData.email,
-            responseData.localId,
-            responseData.idToken,
-            +responseData.expiresIn
-          );
-        })
-      );
-  }
-
-  login(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' +
-          environment.firebaseAPIKey,
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap((responseData) => {
-          this.handleAuth(
-            responseData.email,
-            responseData.localId,
-            responseData.idToken,
-            +responseData.expiresIn
-          );
-        })
-      );
-  }
-
   logout() {
     // this.user.next(null);
     this.store.dispatch(new AuthActions.Logout());
-    this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
     if (this.expirationTimer) {
       clearTimeout(this.expirationTimer);
@@ -126,7 +77,7 @@ export class AuthService {
 
     // this.user.next(user);
     this.store.dispatch(
-      new AuthActions.Login({
+      new AuthActions.AuthSuccess({
         email: email,
         userId: userId,
         token: token,
@@ -160,7 +111,7 @@ export class AuthService {
     if (loadedUser.token) {
       // this.user.next(loadedUser);
       this.store.dispatch(
-        new AuthActions.Login({
+        new AuthActions.AuthSuccess({
           email: loadedUser.email,
           userId: loadedUser.id,
           token: loadedUser.token,
