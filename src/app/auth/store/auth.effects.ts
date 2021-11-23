@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
+import { AuthService } from '../auth.service';
 import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
@@ -74,6 +75,9 @@ export class AuthEffects {
           }
         )
         .pipe(
+          tap((responseData) => {
+            this.authService.setLogoutTimer(+responseData.expiresIn * 1000);
+          }),
           map((responseData) => {
             return handleAuth(
               responseData.email,
@@ -105,6 +109,9 @@ export class AuthEffects {
           }
         )
         .pipe(
+          tap((responseData) => {
+            this.authService.setLogoutTimer(+responseData.expiresIn * 1000);
+          }),
           map((responseData) => {
             return handleAuth(
               responseData.email,
@@ -123,7 +130,7 @@ export class AuthEffects {
   authRedirect = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(AuthActions.AUTH_SUCCESS, AuthActions.LOGOUT),
+        ofType(AuthActions.AUTH_SUCCESS),
         tap(() => {
           this.router.navigate(['/']);
         })
@@ -135,7 +142,9 @@ export class AuthEffects {
   authLogout = this.actions$.pipe(
     ofType(AuthActions.LOGOUT),
     tap(() => {
+      this.authService.clearLogoutTimer();
       localStorage.removeItem('userData');
+      this.router.navigate(['/auth']);
     })
   );
 
@@ -151,7 +160,7 @@ export class AuthEffects {
       } = JSON.parse(localStorage.getItem('userData'));
       // parse converts the 'stringified' JSON object back into the original JS object
       if (!userData) {
-        return {type: 'Dummy'};;
+        return { type: 'Dummy' };
       }
 
       const loadedUser = new User(
@@ -163,24 +172,25 @@ export class AuthEffects {
 
       if (loadedUser.token) {
         // this.user.next(loadedUser);
+        const expirationTime =
+          new Date(userData._tokenExpirationDate).getTime() -
+          new Date().getTime();
+        this.authService.setLogoutTimer(expirationTime);
         return new AuthActions.AuthSuccess({
           email: loadedUser.email,
           userId: loadedUser.id,
           token: loadedUser.token,
           expirationDate: new Date(userData._tokenExpirationDate),
         });
-        // const expirationTime =
-        //   new Date(userData._tokenExpirationDate).getTime() -
-        //   new Date().getTime();
-        // this.autoLogout(expirationTime);
       }
-      return {type: 'Dummy'};
+      return { type: 'Dummy' };
     })
   );
 
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 }
