@@ -3,7 +3,7 @@
 This app has been created as part of the Academind Angular Complete course, instruced by Max Schwarzmuller. When the coursework is complete I will likely come back through and make it my own in a few ways: 
 - change css, potentially play around with something other than Bootstrap
 - investigate the app ChefTap, see if there is an API for pulling recipe info from recipe blog type websites (filter out the mass of unnecessary text, return just the recipe details)
-  - their website says it's using an AI for this, and it almost definitely isn't.
+  - their website says it's using an AI for this, and it probably isn't.
 - continue tinkering while I learn back-end, potentially use this to archive recipes for personal use.
 
 
