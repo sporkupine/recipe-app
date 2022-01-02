@@ -1,0 +1,13 @@
+.nav {
+  color: rgb(43, 42, 42) !important;
+}
+
+.nav > li > a {
+  color: rgb(63, 61, 61) !important;
+  font-size: 2rem;
+  font-weight: 550;
+}
+
+.nav > li > a:hover {
+  color:rgb(148, 9, 9) !important;
+}
